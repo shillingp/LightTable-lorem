@@ -132,10 +132,8 @@
     (dotimes [i count]
       (swap! out-text conj
              (if (< (inc i) count)
-               (str
-                (string/trim (random-paragraph size))
-                "\n\n")
-               para)))
+               (str (string/trim (random-paragraph size)) "\n\n")
+               (string/trim (random-paragraph size)))))
     (reset! out-text (apply str @out-text))))
 
 (defn call-args [optStr optInt arg]

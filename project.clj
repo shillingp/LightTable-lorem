@@ -1,2 +1,2 @@
-(defproject lorem "0.0.1"
+(defproject lorem "0.1.5"
   :dependencies [[org.clojure/clojure "1.5.1"]])
