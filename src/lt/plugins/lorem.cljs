@@ -128,12 +128,13 @@
     (random-paragraph base_size)))
 
 (defn random-paragraphs [count size]
-  (let [out-text (atom [])
-        para (string/trim (random-paragraph size))]
+  (let [out-text (atom [])]
     (dotimes [i count]
       (swap! out-text conj
              (if (< (inc i) count)
-               (str para "\n\n")
+               (str
+                (string/trim (random-paragraph size))
+                "\n\n")
                para)))
     (reset! out-text (apply str @out-text))))
 

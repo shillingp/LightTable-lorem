@@ -33,12 +33,12 @@ lt.plugins.lorem.random_word = (function random_word(size){var mapped = cljs.cor
 {return lt.plugins.lorem.random_element.call(null,mapped.call(null,size));
 }
 });
-lt.plugins.lorem.random_words = (function random_words(count){var out_text = cljs.core.atom.call(null,cljs.core.PersistentVector.EMPTY);var n__7222__auto___10009 = count;var i_10010 = 0;while(true){
-if((i_10010 < n__7222__auto___10009))
+lt.plugins.lorem.random_words = (function random_words(count){var out_text = cljs.core.atom.call(null,cljs.core.PersistentVector.EMPTY);var n__7212__auto___7943 = count;var i_7944 = 0;while(true){
+if((i_7944 < n__7212__auto___7943))
 {cljs.core.swap_BANG_.call(null,out_text,cljs.core.conj," ",lt.plugins.lorem.random_word.call(null,lt.plugins.lorem.size_any));
 {
-var G__10011 = (i_10010 + 1);
-i_10010 = G__10011;
+var G__7945 = (i_7944 + 1);
+i_7944 = G__7945;
 continue;
 }
 } else
@@ -47,12 +47,12 @@ break;
 }
 return cljs.core.reset_BANG_.call(null,out_text,clojure.string.trim.call(null,cljs.core.apply.call(null,cljs.core.str,cljs.core.deref.call(null,out_text))));
 });
-lt.plugins.lorem.random_fragment = (function random_fragment(){var out_text = cljs.core.atom.call(null,cljs.core.PersistentVector.EMPTY);var pattern = lt.plugins.lorem.random_element.call(null,lt.plugins.lorem.fragment_patterns);var n__7222__auto___10012 = cljs.core.count.call(null,pattern);var i_10013 = 0;while(true){
-if((i_10013 < n__7222__auto___10012))
-{cljs.core.swap_BANG_.call(null,out_text,cljs.core.conj," ",lt.plugins.lorem.random_word.call(null,cljs.core.get.call(null,pattern,i_10013)));
+lt.plugins.lorem.random_fragment = (function random_fragment(){var out_text = cljs.core.atom.call(null,cljs.core.PersistentVector.EMPTY);var pattern = lt.plugins.lorem.random_element.call(null,lt.plugins.lorem.fragment_patterns);var n__7212__auto___7946 = cljs.core.count.call(null,pattern);var i_7947 = 0;while(true){
+if((i_7947 < n__7212__auto___7946))
+{cljs.core.swap_BANG_.call(null,out_text,cljs.core.conj," ",lt.plugins.lorem.random_word.call(null,cljs.core.get.call(null,pattern,i_7947)));
 {
-var G__10014 = (i_10013 + 1);
-i_10013 = G__10014;
+var G__7948 = (i_7947 + 1);
+i_7947 = G__7948;
 continue;
 }
 } else
@@ -69,19 +69,19 @@ lt.plugins.lorem.sentence_inter = (function sentence_inter(){if((cljs.core.rand.
 });
 lt.plugins.lorem.sentence_connector = (function sentence_connector(size){return [cljs.core.str(lt.plugins.lorem.random_sentence.call(null,(size - 1))),cljs.core.str(lt.plugins.lorem.sentence_inter.call(null)),cljs.core.str(lt.plugins.lorem.random_sentence.call(null,(size - 1)))].join('');
 });
-lt.plugins.lorem.random_sentence = (function random_sentence(size){var G__9996 = size;if(cljs.core._EQ_.call(null,4,G__9996))
+lt.plugins.lorem.random_sentence = (function random_sentence(size){var G__7930 = size;if(cljs.core._EQ_.call(null,4,G__7930))
 {return lt.plugins.lorem.sentence_connector.call(null,size);
 } else
-{if(cljs.core._EQ_.call(null,3,G__9996))
+{if(cljs.core._EQ_.call(null,3,G__7930))
 {return lt.plugins.lorem.sentence_connector.call(null,size);
 } else
-{if(cljs.core._EQ_.call(null,2,G__9996))
+{if(cljs.core._EQ_.call(null,2,G__7930))
 {return lt.plugins.lorem.sentence_connector.call(null,size);
 } else
-{if(cljs.core._EQ_.call(null,1,G__9996))
+{if(cljs.core._EQ_.call(null,1,G__7930))
 {return lt.plugins.lorem.random_fragment.call(null);
 } else
-{if(cljs.core._EQ_.call(null,0,G__9996))
+{if(cljs.core._EQ_.call(null,0,G__7930))
 {return random_sentence.call(null,lt.plugins.lorem.random_element.call(null,lt.plugins.lorem.all_sizes));
 } else
 {if(new cljs.core.Keyword(null,"else","else",1017020587))
@@ -95,12 +95,12 @@ lt.plugins.lorem.random_sentence = (function random_sentence(size){var G__9996 =
 }
 }
 });
-lt.plugins.lorem.random_sentences = (function random_sentences(count,size){var out_text = cljs.core.atom.call(null,cljs.core.PersistentVector.EMPTY);var n__7222__auto___10015 = count;var i_10016 = 0;while(true){
-if((i_10016 < n__7222__auto___10015))
+lt.plugins.lorem.random_sentences = (function random_sentences(count,size){var out_text = cljs.core.atom.call(null,cljs.core.PersistentVector.EMPTY);var n__7212__auto___7949 = count;var i_7950 = 0;while(true){
+if((i_7950 < n__7212__auto___7949))
 {cljs.core.swap_BANG_.call(null,out_text,cljs.core.conj,clojure.string.capitalize.call(null,lt.plugins.lorem.random_sentence.call(null,size)),". ");
 {
-var G__10017 = (i_10016 + 1);
-i_10016 = G__10017;
+var G__7951 = (i_7950 + 1);
+i_7950 = G__7951;
 continue;
 }
 } else
@@ -109,22 +109,22 @@ break;
 }
 return cljs.core.reset_BANG_.call(null,out_text,clojure.string.trim.call(null,cljs.core.apply.call(null,cljs.core.str,cljs.core.deref.call(null,out_text))));
 });
-lt.plugins.lorem.random_paragraph = (function random_paragraph(size){var G__9998 = size;if(cljs.core._EQ_.call(null,4,G__9998))
+lt.plugins.lorem.random_paragraph = (function random_paragraph(size){var G__7932 = size;if(cljs.core._EQ_.call(null,4,G__7932))
 {return [cljs.core.str(random_paragraph.call(null,lt.plugins.lorem.size_long)),cljs.core.str(random_paragraph.call(null,lt.plugins.lorem.size_long))].join('');
 } else
-{if(cljs.core._EQ_.call(null,3,G__9998))
+{if(cljs.core._EQ_.call(null,3,G__7932))
 {return [cljs.core.str(random_paragraph.call(null,lt.plugins.lorem.size_medium)),cljs.core.str(random_paragraph.call(null,lt.plugins.lorem.size_medium))].join('');
 } else
-{if(cljs.core._EQ_.call(null,2,G__9998))
+{if(cljs.core._EQ_.call(null,2,G__7932))
 {return [cljs.core.str(random_paragraph.call(null,lt.plugins.lorem.size_short)),cljs.core.str(random_paragraph.call(null,lt.plugins.lorem.size_short))].join('');
 } else
-{if(cljs.core._EQ_.call(null,1,G__9998))
-{var out_text = cljs.core.atom.call(null,cljs.core.PersistentVector.EMPTY);var n__7222__auto___10018 = (3 + cljs.core.rand_int.call(null,2));var i_10019 = 0;while(true){
-if((i_10019 < n__7222__auto___10018))
+{if(cljs.core._EQ_.call(null,1,G__7932))
+{var out_text = cljs.core.atom.call(null,cljs.core.PersistentVector.EMPTY);var n__7212__auto___7952 = (3 + cljs.core.rand_int.call(null,2));var i_7953 = 0;while(true){
+if((i_7953 < n__7212__auto___7952))
 {cljs.core.swap_BANG_.call(null,out_text,cljs.core.conj,clojure.string.capitalize.call(null,lt.plugins.lorem.random_sentence.call(null,lt.plugins.lorem.size_any)),". ");
 {
-var G__10020 = (i_10019 + 1);
-i_10019 = G__10020;
+var G__7954 = (i_7953 + 1);
+i_7953 = G__7954;
 continue;
 }
 } else
@@ -143,12 +143,12 @@ return cljs.core.reset_BANG_.call(null,out_text,cljs.core.apply.call(null,cljs.c
 }
 }
 });
-lt.plugins.lorem.random_paragraphs = (function random_paragraphs(count,size){var out_text = cljs.core.atom.call(null,cljs.core.PersistentVector.EMPTY);var para = clojure.string.trim.call(null,lt.plugins.lorem.random_paragraph.call(null,size));var n__7222__auto___10021 = count;var i_10022 = 0;while(true){
-if((i_10022 < n__7222__auto___10021))
-{cljs.core.swap_BANG_.call(null,out_text,cljs.core.conj,((((i_10022 + 1) < count))?[cljs.core.str(para),cljs.core.str("\n\n")].join(''):para));
+lt.plugins.lorem.random_paragraphs = (function random_paragraphs(count,size){var out_text = cljs.core.atom.call(null,cljs.core.PersistentVector.EMPTY);var n__7212__auto___7955 = count;var i_7956 = 0;while(true){
+if((i_7956 < n__7212__auto___7955))
+{cljs.core.swap_BANG_.call(null,out_text,cljs.core.conj,((((i_7956 + 1) < count))?[cljs.core.str(clojure.string.trim.call(null,lt.plugins.lorem.random_paragraph.call(null,size))),cljs.core.str("\n\n")].join(''):lt.plugins.lorem.para));
 {
-var G__10023 = (i_10022 + 1);
-i_10022 = G__10023;
+var G__7957 = (i_7956 + 1);
+i_7956 = G__7957;
 continue;
 }
 } else
@@ -165,13 +165,13 @@ lt.plugins.lorem.call_args = (function call_args(optStr,optInt,arg){var optInt__
 })());
 return lt.plugins.lorem.run_command.call(null,cljs.core.deref.call(null,config));
 });
-lt.plugins.lorem.run_command = (function run_command(c){var G__10000 = c.call(null,new cljs.core.Keyword(null,"type","type",1017479852));if(cljs.core._EQ_.call(null,"word",G__10000))
+lt.plugins.lorem.run_command = (function run_command(c){var G__7934 = c.call(null,new cljs.core.Keyword(null,"type","type",1017479852));if(cljs.core._EQ_.call(null,"word",G__7934))
 {return lt.plugins.lorem.random_words.call(null,c.call(null,new cljs.core.Keyword(null,"count","count",1108755585)));
 } else
-{if(cljs.core._EQ_.call(null,"sentence",G__10000))
+{if(cljs.core._EQ_.call(null,"sentence",G__7934))
 {return lt.plugins.lorem.random_sentences.call(null,c.call(null,new cljs.core.Keyword(null,"count","count",1108755585)),c.call(null,new cljs.core.Keyword(null,"size","size",1017434995)));
 } else
-{if(cljs.core._EQ_.call(null,"paragraph",G__10000))
+{if(cljs.core._EQ_.call(null,"paragraph",G__7934))
 {return lt.plugins.lorem.random_paragraphs.call(null,c.call(null,new cljs.core.Keyword(null,"count","count",1108755585)),c.call(null,new cljs.core.Keyword(null,"size","size",1017434995)));
 } else
 {if(new cljs.core.Keyword(null,"else","else",1017020587))
@@ -195,17 +195,17 @@ lt.plugins.lorem.parse_args = (function parse_args(arg){var temp__4090__auto__ =
 }
 }
 });
-lt.plugins.lorem.parse_command = (function parse_command(command){var command_array = clojure.string.split.call(null,command,/_/);var iter__7091__auto__ = ((function (command_array){
-return (function iter__10005(s__10006){return (new cljs.core.LazySeq(null,((function (command_array){
-return (function (){var s__10006__$1 = s__10006;while(true){
-var temp__4092__auto__ = cljs.core.seq.call(null,s__10006__$1);if(temp__4092__auto__)
-{var s__10006__$2 = temp__4092__auto__;if(cljs.core.chunked_seq_QMARK_.call(null,s__10006__$2))
-{var c__7089__auto__ = cljs.core.chunk_first.call(null,s__10006__$2);var size__7090__auto__ = cljs.core.count.call(null,c__7089__auto__);var b__10008 = cljs.core.chunk_buffer.call(null,size__7090__auto__);if((function (){var i__10007 = 0;while(true){
-if((i__10007 < size__7090__auto__))
-{var i = cljs.core._nth.call(null,c__7089__auto__,i__10007);cljs.core.chunk_append.call(null,b__10008,lt.plugins.lorem.parse_args.call(null,cljs.core.get.call(null,command_array,i)));
+lt.plugins.lorem.parse_command = (function parse_command(command){var command_array = clojure.string.split.call(null,command,/_/);var iter__7081__auto__ = ((function (command_array){
+return (function iter__7939(s__7940){return (new cljs.core.LazySeq(null,((function (command_array){
+return (function (){var s__7940__$1 = s__7940;while(true){
+var temp__4092__auto__ = cljs.core.seq.call(null,s__7940__$1);if(temp__4092__auto__)
+{var s__7940__$2 = temp__4092__auto__;if(cljs.core.chunked_seq_QMARK_.call(null,s__7940__$2))
+{var c__7079__auto__ = cljs.core.chunk_first.call(null,s__7940__$2);var size__7080__auto__ = cljs.core.count.call(null,c__7079__auto__);var b__7942 = cljs.core.chunk_buffer.call(null,size__7080__auto__);if((function (){var i__7941 = 0;while(true){
+if((i__7941 < size__7080__auto__))
+{var i = cljs.core._nth.call(null,c__7079__auto__,i__7941);cljs.core.chunk_append.call(null,b__7942,lt.plugins.lorem.parse_args.call(null,cljs.core.get.call(null,command_array,i)));
 {
-var G__10024 = (i__10007 + 1);
-i__10007 = G__10024;
+var G__7958 = (i__7941 + 1);
+i__7941 = G__7958;
 continue;
 }
 } else
@@ -214,12 +214,12 @@ continue;
 break;
 }
 })())
-{return cljs.core.chunk_cons.call(null,cljs.core.chunk.call(null,b__10008),iter__10005.call(null,cljs.core.chunk_rest.call(null,s__10006__$2)));
+{return cljs.core.chunk_cons.call(null,cljs.core.chunk.call(null,b__7942),iter__7939.call(null,cljs.core.chunk_rest.call(null,s__7940__$2)));
 } else
-{return cljs.core.chunk_cons.call(null,cljs.core.chunk.call(null,b__10008),null);
+{return cljs.core.chunk_cons.call(null,cljs.core.chunk.call(null,b__7942),null);
 }
 } else
-{var i = cljs.core.first.call(null,s__10006__$2);return cljs.core.cons.call(null,lt.plugins.lorem.parse_args.call(null,cljs.core.get.call(null,command_array,i)),iter__10005.call(null,cljs.core.rest.call(null,s__10006__$2)));
+{var i = cljs.core.first.call(null,s__7940__$2);return cljs.core.cons.call(null,lt.plugins.lorem.parse_args.call(null,cljs.core.get.call(null,command_array,i)),iter__7939.call(null,cljs.core.rest.call(null,s__7940__$2)));
 }
 } else
 {return null;
@@ -229,7 +229,7 @@ break;
 });})(command_array))
 ,null,null));
 });})(command_array))
-;return iter__7091__auto__.call(null,cljs.core.range.call(null,1,cljs.core.count.call(null,command_array)));
+;return iter__7081__auto__.call(null,cljs.core.range.call(null,1,cljs.core.count.call(null,command_array)));
 });
 lt.plugins.lorem.lorem_ipsum_catch = (function lorem_ipsum_catch(){var cm = lt.objs.editor.__GT_cm_ed.call(null,lt.objs.editor.pool.last_active.call(null));var coords = lt.objs.editor.__GT_cursor.call(null,cm);var pre_pos = cm.findPosH(cljs.core.clj__GT_js.call(null,coords),-1,"word",true);var pre_word = lt.objs.editor.range.call(null,cm,pre_pos,coords);var temp__4090__auto__ = cljs.core.re_find.call(null,/lorem_.\S*/,pre_word);if(cljs.core.truth_(temp__4090__auto__))
 {var in_str = temp__4090__auto__;if(!((coords.call(null,new cljs.core.Keyword(null,"ch","ch",1013907415)) === 0)))
