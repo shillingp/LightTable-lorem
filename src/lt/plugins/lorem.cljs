@@ -6,26 +6,26 @@
   (:require-macros [lt.macros :refer [behavior]]))
 
 
-
 (def size_any 0)
 (def size_short 1)
 (def size_medium 2)
 (def size_long 3)
 (def size_very_long 4)
+(def all_sizes [size_short size_medium size_long size_very_long])
 
-(def default_unit_type "paragraph")
-(def default_unit_count 1)
-(def default_unit_size size_medium)
+(def short_words ["a" "ab" "ad" "an" "aut" "de" "do" "e" "ea" "est" "et" "eu" "ex" "hic" "id" "iis" "in" "ita" "nam" "ne" "non" "o" "qui" "quo" "se" "sed" "si" "te" "ubi" "ut"])
+(def medium_words ["amet" "aliqua" "anim" "aute" "cillum" "culpa" "dolor" "dolore" "duis" "elit" "enim" "eram" "esse" "fore" "fugiat" "illum" "ipsum" "irure" "labore" "legam" "lorem" "magna" "malis" "minim" "multos" "nisi" "noster" "nulla" "quae" "quem" "quid" "quis" "quorum" "sint" "summis" "sunt" "tamen" "varias" "velit" "veniam"])
+(def long_words ["admodum" "aliquip" "appellat" "arbitror" "cernantur" "commodo" "consequat" "cupidatat" "deserunt" "doctrina" "eiusmod" "excepteur" "expetendis" "fabulas" "incididunt" "incurreret" "ingeniis" "iudicem" "laboris" "laborum" "litteris" "mandaremus" "mentitum" "nescius" "nostrud" "occaecat" "officia" "offendit" "pariatur" "possumus" "probant" "proident" "quamquam" "quibusdam" "senserit" "singulis" "tempor" "ullamco" "vidisse" "voluptate"])
+(def very_long_words ["adipisicing" "arbitrantur" "cohaerescant" "comprehenderit" "concursionibus" "coniunctione" "consectetur" "despicationes" "distinguantur" "domesticarum" "efflorescere" "eruditionem" "exquisitaque" "exercitation" "familiaritatem" "fidelissimae" "firmissimum" "graviterque" "illustriora" "instituendarum" "imitarentur" "philosophari" "praesentibus" "praetermissum" "relinqueret" "reprehenderit" "sempiternum" "tractavissent" "transferrem" "voluptatibus"])
+(def word_lists [short_words medium_words long_words very_long_words])
+(def all_words (into [] (flatten word_lists)))
 
-(def allsizes [size_short size_medium size_long size_very_long])
-(def shortwords ["a" "ab" "ad" "an" "aut" "de" "do" "e" "ea" "est" "et" "eu" "ex" "hic" "id" "iis" "in" "ita" "nam" "ne" "non" "o" "qui" "quo" "se" "sed" "si" "te" "ubi" "ut"])
-(def mediumwords ["amet" "aliqua" "anim" "aute" "cillum" "culpa" "dolor" "dolore" "duis" "elit" "enim" "eram" "esse" "fore" "fugiat" "illum" "ipsum" "irure" "labore" "legam" "lorem" "magna" "malis" "minim" "multos" "nisi" "noster" "nulla" "quae" "quem" "quid" "quis" "quorum" "sint" "summis" "sunt" "tamen" "varias" "velit" "veniam"])
-(def longwords ["admodum" "aliquip" "appellat" "arbitror" "cernantur" "commodo" "consequat" "cupidatat" "deserunt" "doctrina" "eiusmod" "excepteur" "expetendis" "fabulas" "incididunt" "incurreret" "ingeniis" "iudicem" "laboris" "laborum" "litteris" "mandaremus" "mentitum" "nescius" "nostrud" "occaecat" "officia" "offendit" "pariatur" "possumus" "probant" "proident" "quamquam" "quibusdam" "senserit" "singulis" "tempor" "ullamco" "vidisse" "voluptate"])
-(def verylongwords ["adipisicing" "arbitrantur" "cohaerescant" "comprehenderit" "concursionibus" "coniunctione" "consectetur" "despicationes" "distinguantur" "domesticarum" "efflorescere" "eruditionem" "exquisitaque" "exercitation" "familiaritatem" "fidelissimae" "firmissimum" "graviterque" "illustriora" "instituendarum" "imitarentur" "philosophari" "praesentibus" "praetermissum" "relinqueret" "reprehenderit" "sempiternum" "tractavissent" "transferrem" "voluptatibus"])
-(def allwords (into [] (concat shortwords mediumwords longwords verylongwords)))
+(def base_type "paragraph")
+(def base_count 1)
+(def base_size size_medium)
 
-(def fragment_patterns [
-                        ;; Three words
+
+(def fragment_patterns [;; Three words
                         [size_short size_medium size_long]
                         [size_short size_medium size_very_long]
                         [size_short size_short size_very_long]
@@ -36,7 +36,6 @@
                         [size_long size_short size_medium]
                         [size_long size_short size_long]
                         [size_long size_medium size_long]
-
                         ;; Four words
                         [size_short size_short size_medium size_long]
                         [size_short size_medium size_short size_medium]
@@ -48,7 +47,6 @@
                         [size_long size_short size_medium size_long]
                         [size_long size_medium size_long size_long]
                         [size_long size_very_long size_short size_long]
-
                         ;; Five words
                         [size_short size_short size_medium size_medium size_medium]
                         [size_short size_medium size_medium size_short size_long]
@@ -59,165 +57,139 @@
                         [size_medium size_very_long size_long size_medium size_long]
                         [size_long size_medium size_short size_long size_very_long]
                         [size_long size_medium size_medium size_short size_medium]
-                        [size_long size_medium size_medium size_long size_medium]
-                        ])
+                        [size_long size_medium size_medium size_long size_medium]])
 
-
-
-(defn getRandomElement [arr]
+(defn random-element [arr]
   (get arr (rand-int (count arr))))
 
-(defn getRandomWord [size]
-  (->
-   (case size
-     0 allwords
-     1 shortwords
-     2 mediumwords
-     3 longwords
-     4 verylongwords
-     allwords)
-   (getRandomElement)))
+(defn random-word [size]
+  (let [mapped (zipmap all_sizes word_lists)]
+    (if (zero? size)
+      (random-element all_words)
+      (random-element (mapped size)))))
 
-(defn getRandomWords [count]
-  (let [outText (atom [])]
+(defn random-words [count]
+  (let [out-text (atom [])]
     (dotimes [i count]
-      (swap! outText conj
-             " " (getRandomWord size_any)))
-    (reset! outText
-            (string/trim (apply str @outText)))))
+      (swap! out-text conj
+             " " (random-word size_any)))
+    (reset! out-text
+            (string/trim (apply str @out-text)))))
 
-
-
-(defn getRandomFragment []
-  (let [outText (atom [])
-        pattern (getRandomElement fragment_patterns)]
+(defn random-fragment []
+  (let [out-text (atom [])
+        pattern (random-element fragment_patterns)]
     (dotimes [i (count pattern)]
-      (swap! outText conj
-             " " (getRandomWord (get pattern i))))
-    (reset! outText
-            (string/trim (apply str @outText)))))
+      (swap! out-text conj
+             " " (random-word (get pattern i))))
+    (reset! out-text
+            (string/trim (apply str @out-text)))))
 
-
-
-(defn sentenceConnector []
+(defn sentence-inter []
   (if (< (rand) 0.5)
-    ", "
-    (str " " (getRandomWord size_short) " ")))
+    ", " (str " " (random-word size_short) " ")))
 
+(defn sentence-connector [size]
+  (str (random-sentence (- size 1))
+       (sentence-inter)
+       (random-sentence (- size 1))))
 
-
-(defn getRandomSentence [size]
+(defn random-sentence [size]
   (case size
-    0 (getRandomSentence (getRandomElement allsizes))
-    1 (getRandomFragment)
-    2 (str (getRandomSentence size_short)
-           (sentenceConnector)
-           (getRandomSentence size_short))
-    3 (str (getRandomSentence size_medium)
-           (sentenceConnector)
-           (getRandomSentence size_medium))
-    4 (str (getRandomSentence size_long)
-           (sentenceConnector)
-           (getRandomSentence size_long))
-    (getRandomSentence default_unit_size)))
+    0 (random-sentence (random-element all_sizes))
+    1 (random-fragment)
+    2 (sentence-connector size)
+    3 (sentence-connector size)
+    4 (sentence-connector size)
+    (random-sentence base_size)))
 
-
-
-(defn getRandomSentences [count size]
-  (let [outText (atom [])]
+(defn random-sentences [count size]
+  (let [out-text (atom [])]
     (dotimes [i count]
-      (swap! outText conj
-             (string/capitalize (getRandomSentence size))
+      (swap! out-text conj
+             (string/capitalize (random-sentence size))
              ". "))
-    (reset! outText
-            (string/trim
-             (apply str @outText)))))
+    (reset! out-text
+            (string/trim (apply str @out-text)))))
 
-(defn getRandomParagraph [size]
+(defn random-paragraph [size]
   (case size
-    1 (let [outText (atom [])]
+    1 (let [out-text (atom [])]
         (dotimes [i (+ 3 (rand-int 2))]
-          (swap! outText conj
-                 (string/capitalize (getRandomSentence size_any))
-                 ". "))
-        (reset! outText (apply str @outText)))
-    2 (str (getRandomParagraph size_short)
-           (getRandomParagraph size_short))
-    3 (str (getRandomParagraph size_medium)
-           (getRandomParagraph size_medium))
-    4 (str (getRandomParagraph size_long)
-           (getRandomParagraph size_long))
-    (getRandomParagraph default_unit_size)))
+          (swap! out-text conj
+                 (string/capitalize (random-sentence size_any)) ". "))
+        (reset! out-text (apply str @out-text)))
+    2 (str (random-paragraph size_short)
+           (random-paragraph size_short))
+    3 (str (random-paragraph size_medium)
+           (random-paragraph size_medium))
+    4 (str (random-paragraph size_long)
+           (random-paragraph size_long))
+    (random-paragraph base_size)))
 
-(defn getRandomParagraphs [count size]
-  (let [outText (atom [])]
+(defn random-paragraphs [count size]
+  (let [out-text (atom [])
+        para (string/trim (random-paragraph size))]
     (dotimes [i count]
-      (swap! outText conj
-             (string/trim (getRandomParagraph size))))
-    (reset! outText (apply str @outText))))
+      (swap! out-text conj
+             (if (< (inc i) count)
+               (str para "\n\n")
+               para)))
+    (reset! out-text (apply str @out-text))))
 
-(defn runCommand [c]
-  (case (c :unitType)
-    "paragraph" (getRandomParagraphs (c :unitCount) (c :unitSize))
-    "sentence" (getRandomSentences (c :unitCount) (c :unitSize))
-    "word" (getRandomWords (c :unitCount))
-    "default"))
-
-(defn callArgs [optStr optInt]
-  (let [optInt (if (empty? optInt)
-                 default_unit_count (js/parseInt optInt))
-        config (atom {:unitType default_unit_type
-                      :unitCount optInt
-                      :unitSize default_unit_size})]
+(defn call-args [optStr optInt arg]
+  (let [optInt (if (empty? optInt) base_count (js/parseInt optInt))
+        config (atom {:type base_type :count optInt :size base_size})
+        settings {"p" {:type "paragraph"}
+                  "w" {:type "word"}
+                  "s" {:type "sentence"}
+                  "short" {:size size_short}
+                  "medium" {:size size_medium}
+                  "long" {:size size_long}
+                  "vlong" {:size size_very_long}}]
     (reset! config
-            (case optStr
-              "p" (assoc @config :unitType "paragraph")
-              "w" (assoc @config :unitType "word")
-              "s" (assoc @config :unitType "sentence")
-              "short" (assoc @config :unitSize size_short)
-              "medium" (assoc @config :unitSize size_medium)
-              "long" (assoc @config :unitSize size_long)
-              "vlong" (assoc @config :unitSize size_very_long)
-              "default"))
-    (runCommand @config)))
+            (if-let [form (first (settings optStr))]
+              (assoc @config (form 0) (form 1))
+              (assoc @config :type arg)))
+    (run-command @config)))
 
-(defn parseArgs [arg]
-  (if-let [optRes (re-find #"^([a-z\?]+)(\d*)$" arg)]
-    (callArgs (get optRes 1) (get optRes 2))
-    (if-let [optRes (re-find #"^(\d*)([a-z\?]+)$" arg)]
-      (callArgs (get optRes 2) (get optRes 1))
-      (str "Error: Unrecognized option '_" arg "'."))))
+(defn run-command [c]
+  (case (c :type)
+    "paragraph" (random-paragraphs (c :count) (c :size))
+    "sentence" (random-sentences (c :count) (c :size))
+    "word" (random-words (c :count))
+    (str "Error: Invalid option \"_" (c :type) "\"")))
 
-(defn parseCommand [command]
-  (let [commandArray (string/split command #"_")]
-    (for [i (range 1 (count commandArray))]
-      (parseArgs (get commandArray i)))))
+(defn lorem-plain []
+  (let [basic {:type base_type
+               :count base_count
+               :size base_size}]
+        (run-command basic)))
 
-(defn find-command [string]
-  (if-let [command (re-find #"lorem_.\S*" string)]
-    (apply str (parseCommand command))))
+(defn parse-args [arg]
+  (if-let [opt-res (re-find #"^([a-z\?]+)(\d*)$" arg)]
+    (call-args (get opt-res 1) (get opt-res 2) arg)
+    (if-let [opt-res (re-find #"^(\d*)([a-z\?]+)$" arg)]
+      (call-args (get opt-res 2) (get opt-res 1) arg)
+      (str "Error: Invalid option \"_" arg "\""))))
 
-;; (defn lorem-ipsum-catch []
-;;   (let [cm (editor/->cm-ed (pool/last-active))
-;;         from #js {:line (.-line (.getCursor cm)) :ch 0}
-;;         line-range (.getRange cm from (.getCursor cm))
-;;         searcher (re-find #"lorem_.\S*" line-range)]
-;;     (if searcher
-;;       (do (js/CodeMirror.commands.find
-;;            cm searcher false)
-;;         (js/CodeMirror.commands.replace
-;;          cm (apply str (parseCommand searcher)) false true)))))
+(defn parse-command [command]
+  (let [command-array (string/split command #"_")]
+    (for [i (range 1 (count command-array))]
+      (parse-args (get command-array i)))))
 
 (defn lorem-ipsum-catch []
   (let [cm (editor/->cm-ed (pool/last-active))
         coords (editor/->cursor cm)
-        pre-word (.findPosH cm (clj->js coords) -1 "word" true)]
-
-
-
-    (editor/range cm pre-word coords)
-    (editor/replace cm pre-word coords "foo")))
-
+        pre-pos (.findPosH cm (clj->js coords) -1 "word" true)
+        pre-word (editor/range cm pre-pos coords)]
+    (if-let [in-str (re-find #"lorem_.\S*" pre-word)]
+      (if-not (zero? (coords :ch))
+        (->>
+         (apply str (parse-command in-str))
+         (editor/replace cm pre-pos coords)))
+      (editor/insert-at-cursor
+       cm (lorem-plain)))))
 
 (cmd/command {:command :lorem-ipsum
               :desc "Lorem Ipsum random text generator"
