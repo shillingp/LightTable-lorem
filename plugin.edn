@@ -1,0 +1,5 @@
+{:name "Lorem"
+ :author "Peter Shilling"
+ :source "https://github.com/ShillingP/LoremIpsum"
+ :desc "Random Lorem Ipsum text generator for Light Table with generation options"
+ :behaviors "lorem.behaviors"}
