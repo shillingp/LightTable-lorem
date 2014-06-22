@@ -3,8 +3,7 @@
             [lt.objs.editor.pool :as pool]
             [lt.objs.command :as cmd]
             [clojure.string :as string])
-  (:require-macros [lt.macros :refer [behavior]]))
-
+  (:require-macros [lt.macros :refer [defui behavior]]))
 
 (def size_any 0)
 (def size_short 1)
@@ -20,10 +19,22 @@
 (def word_lists [short_words medium_words long_words very_long_words])
 (def all_words (into [] (flatten word_lists)))
 
-(def base_type "paragraph")
-(def base_count 1)
-(def base_size size_medium)
+(def counter (atom 0))
+(def config (atom {}))
 
+(def base (atom {:type "paragraph"
+                 :count 1
+                 :size size_medium}))
+
+(def bindings {"p" {:type "paragraph"}
+               "s" {:type "sentence"}
+               "w" {:type "word"}
+               "short" {:size size_short}
+               "medium" {:size size_medium}
+               "long" {:size size_long}
+               "vlong" {:size size_very_long}})
+
+(def search-reg #"lorem_.\S*")
 
 (def fragment_patterns [;; Three words
                         [size_short size_medium size_long]
@@ -90,9 +101,8 @@
     ", " (str " " (random-word size_short) " ")))
 
 (defn sentence-connector [size]
-  (str (random-sentence (- size 1))
-       (sentence-inter)
-       (random-sentence (- size 1))))
+  (letfn [(rand-side [] (random-sentence (dec size)))]
+    (str (rand-side) (sentence-inter) (rand-side))))
 
 (defn random-sentence [size]
   (case size
@@ -101,55 +111,45 @@
     2 (sentence-connector size)
     3 (sentence-connector size)
     4 (sentence-connector size)
-    (random-sentence base_size)))
+    (random-sentence (base :size))))
 
 (defn random-sentences [count size]
   (let [out-text (atom [])]
     (dotimes [i count]
       (swap! out-text conj
-             (string/capitalize (random-sentence size))
-             ". "))
+             (string/capitalize (random-sentence size)) ". \n\n"))
     (reset! out-text
             (string/trim (apply str @out-text)))))
 
 (defn random-paragraph [size]
-  (case size
-    1 (let [out-text (atom [])]
-        (dotimes [i (+ 3 (rand-int 2))]
-          (swap! out-text conj
-                 (string/capitalize (random-sentence size_any)) ". "))
-        (reset! out-text (apply str @out-text)))
-    2 (str (random-paragraph size_short)
-           (random-paragraph size_short))
-    3 (str (random-paragraph size_medium)
-           (random-paragraph size_medium))
-    4 (str (random-paragraph size_long)
-           (random-paragraph size_long))
-    (random-paragraph base_size)))
+  (letfn [(two-of [x] (apply str (repeat 2 (random-paragraph x))))]
+    (case size
+      1 (let [out-text (atom [])]
+          (dotimes [i (+ 3 (rand-int 2))]
+            (swap! out-text conj
+                   (string/capitalize (random-sentence size_any)) ". "))
+          (reset! out-text (apply str @out-text)))
+      2 (two-of size_short)
+      3 (two-of size_medium)
+      4 (two-of size_long)
+      (random-paragraph (base :size)))))
 
 (defn random-paragraphs [count size]
   (let [out-text (atom [])]
     (dotimes [i count]
       (swap! out-text conj
-             (if (< (inc i) count)
-               (str (string/trim (random-paragraph size)) "\n\n")
-               (string/trim (random-paragraph size)))))
-    (reset! out-text (apply str @out-text))))
+             (str (random-paragraph size) "\n\n")))
+    (reset! out-text
+            (string/trim (apply str @out-text)))))
 
 (defn call-args [optStr optInt arg]
-  (let [optInt (if (empty? optInt) base_count (js/parseInt optInt))
-        config (atom {:type base_type :count optInt :size base_size})
-        settings {"p" {:type "paragraph"}
-                  "w" {:type "word"}
-                  "s" {:type "sentence"}
-                  "short" {:size size_short}
-                  "medium" {:size size_medium}
-                  "long" {:size size_long}
-                  "vlong" {:size size_very_long}}]
-    (reset! config
-            (if-let [form (first (settings optStr))]
-              (assoc @config (form 0) (form 1))
-              (assoc @config :type arg)))
+  (swap! counter dec)
+  (prn @counter)
+  (if (not-empty optInt)
+    (swap! config assoc :count optInt))
+  (swap! config merge (if-let [form (first (bindings optStr))]
+                        {(form 0) (form 1)} {:type arg}))
+  (if (zero? @counter)
     (run-command @config)))
 
 (defn run-command [c]
@@ -158,12 +158,6 @@
     "sentence" (random-sentences (c :count) (c :size))
     "word" (random-words (c :count))
     (str "Error: Invalid option \"_" (c :type) "\"")))
-
-(defn lorem-plain []
-  (let [basic {:type base_type
-               :count base_count
-               :size base_size}]
-        (run-command basic)))
 
 (defn parse-args [arg]
   (if-let [opt-res (re-find #"^([a-z\?]+)(\d*)$" arg)]
@@ -174,22 +168,52 @@
 
 (defn parse-command [command]
   (let [command-array (string/split command #"_")]
+    (reset! counter (dec (count command-array)))
     (for [i (range 1 (count command-array))]
       (parse-args (get command-array i)))))
 
-(defn lorem-ipsum-catch []
-  (let [cm (editor/->cm-ed (pool/last-active))
-        coords (editor/->cursor cm)
+(defn check-command [cm]
+  (let [coords (editor/->cursor cm)
         pre-pos (.findPosH cm (clj->js coords) -1 "word" true)
-        pre-word (editor/range cm pre-pos coords)]
-    (if-let [in-str (re-find #"lorem_.\S*" pre-word)]
+        word-range (editor/range cm pre-pos coords)]
+    (if-let [in-str (re-find search-reg word-range)]
       (if-not (zero? (coords :ch))
-        (->>
-         (apply str (parse-command in-str))
-         (editor/replace cm pre-pos coords)))
-      (editor/insert-at-cursor
-       cm (lorem-plain)))))
+        (->> (apply str (parse-command in-str))
+             (editor/replace cm pre-pos coords))
+        (editor/insert-at-cursor cm (run-command @base))))))
+
+(defn lorem-ipsum-catch []
+  (let [cm (editor/->cm-ed (pool/last-active))]
+    (reset! config @base)
+    (check-command cm)))
 
 (cmd/command {:command :lorem-ipsum
-              :desc "Lorem Ipsum random text generator"
+              :desc "Lorem: Run text generator"
               :exec lorem-ipsum-catch})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
