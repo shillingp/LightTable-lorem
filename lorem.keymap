@@ -1,1 +1,1 @@
-;; {:+ {:editor.keys.normal {"ctrl-l" [:lorem-ipsum]}}}
+{:+ {:editor.keys.normal {"ctrl-l" [:lorem-ipsum]}}}
