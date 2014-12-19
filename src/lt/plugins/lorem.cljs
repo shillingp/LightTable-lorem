@@ -144,7 +144,6 @@
 
 (defn call-args [optStr optInt arg]
   (swap! counter dec)
-  (prn @counter)
   (if (not-empty optInt)
     (swap! config assoc :count optInt))
   (swap! config merge (if-let [form (first (bindings optStr))]
