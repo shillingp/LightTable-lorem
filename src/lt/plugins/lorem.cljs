@@ -70,31 +70,30 @@
                         [size_long size_medium size_medium size_short size_medium]
                         [size_long size_medium size_medium size_long size_medium]])
 
-(defn random-element [arr]
-  (get arr (rand-int (count arr))))
 
 (defn random-word [size]
   (let [mapped (zipmap all_sizes word_lists)]
     (if (zero? size)
-      (random-element all_words)
-      (random-element (mapped size)))))
+      (rand-nth all_words)
+      (rand-nth (mapped size)))))
 
 (defn random-words [count]
-  (let [out-text (atom [])]
-    (dotimes [i count]
-      (swap! out-text conj
-             " " (random-word size_any)))
-    (reset! out-text
-            (string/trim (apply str @out-text)))))
+  (->> (for [i (range count)]
+         (->> (random-word size_any)
+              (str " ")))
+       (apply str)
+       (string/trim)))
+
+(random-words 10)
 
 (defn random-fragment []
-  (let [out-text (atom [])
-        pattern (random-element fragment_patterns)]
-    (dotimes [i (count pattern)]
-      (swap! out-text conj
-             " " (random-word (get pattern i))))
-    (reset! out-text
-            (string/trim (apply str @out-text)))))
+  (let [pattern (rand-nth fragment_patterns)]
+    (->> (for [i (range (count pattern))]
+            (->> (get pattern i)
+                 (random-word)
+                 (str " ")))
+         (apply str)
+         (string/trim))))
 
 (defn sentence-inter []
   (if (< (rand) 0.5)
@@ -102,11 +101,13 @@
 
 (defn sentence-connector [size]
   (letfn [(rand-side [] (random-sentence (dec size)))]
-    (str (rand-side) (sentence-inter) (rand-side))))
+    (str (rand-side)
+         (sentence-inter)
+         (rand-side))))
 
 (defn random-sentence [size]
   (case size
-    0 (random-sentence (random-element all_sizes))
+    0 (random-sentence (rand-nth all_sizes))
     1 (random-fragment)
     2 (sentence-connector size)
     3 (sentence-connector size)
@@ -114,37 +115,35 @@
     (random-sentence (base :size))))
 
 (defn random-sentences [count size]
-  (let [out-text (atom [])]
-    (dotimes [i count]
-      (swap! out-text conj
-             (string/capitalize (random-sentence size)) ". \n\n"))
-    (reset! out-text
-            (string/trim (apply str @out-text)))))
+  (->> (for [i (range count)]
+         (-> (random-sentence size)
+             (string/capitalize)
+             (str". \n\n")))
+       (apply str)
+       (string/trim)))
 
 (defn random-paragraph [size]
   (letfn [(two-of [x] (apply str (repeat 2 (random-paragraph x))))]
     (case size
-      1 (let [out-text (atom [])]
-          (dotimes [i (+ 3 (rand-int 2))]
-            (swap! out-text conj
-                   (string/capitalize (random-sentence size_any)) ". "))
-          (reset! out-text (apply str @out-text)))
+      1 (apply str
+          (for [i (range (+ 3 (rand-int 2)))]
+            (-> (random-sentence size_any)
+                (string/capitalize)
+                (str ". "))))
       2 (two-of size_short)
       3 (two-of size_medium)
       4 (two-of size_long)
       (random-paragraph (base :size)))))
 
 (defn random-paragraphs [count size]
-  (let [out-text (atom [])]
-    (dotimes [i count]
-      (swap! out-text conj
-             (str (random-paragraph size) "\n\n")))
-    (reset! out-text
-            (string/trim (apply str @out-text)))))
+  (->> (for [i (range count)]
+         (-> (random-paragraph size)
+             (str "\n\n")))
+       (apply str)
+       (string/trim)))
 
 (defn call-args [optStr optInt arg]
   (swap! counter dec)
-  (prn @counter)
   (if (not-empty optInt)
     (swap! config assoc :count optInt))
   (swap! config merge (if-let [form (first (bindings optStr))]
@@ -182,6 +181,7 @@
              (editor/replace cm pre-pos coords))
         (editor/insert-at-cursor cm (run-command @base))))))
 
+
 (defn lorem-ipsum-catch []
   (let [cm (editor/->cm-ed (pool/last-active))]
     (reset! config @base)
@@ -190,30 +190,4 @@
 (cmd/command {:command :lorem-ipsum
               :desc "Lorem: Run text generator"
               :exec lorem-ipsum-catch})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
