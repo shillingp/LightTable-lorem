@@ -70,6 +70,10 @@
                         [size_long size_medium size_medium size_short size_medium]
                         [size_long size_medium size_medium size_long size_medium]])
 
+(defn apply-trim
+  [arr]
+  (->> (apply str arr)
+       (string/trim)))
 
 (defn random-word [size]
   (let [mapped (zipmap all_sizes word_lists)]
@@ -77,23 +81,20 @@
       (rand-nth all_words)
       (rand-nth (mapped size)))))
 
-(defn random-words [count]
-  (->> (for [i (range count)]
-         (->> (random-word size_any)
-              (str " ")))
-       (apply str)
-       (string/trim)))
-
-(random-words 10)
+(defn random-words
+  [count]
+  (apply-trim
+    (for [i (range count)]
+      (->> (random-word size_any)
+           (str " ")))))
 
 (defn random-fragment []
   (let [pattern (rand-nth fragment_patterns)]
-    (->> (for [i (range (count pattern))]
-            (->> (get pattern i)
-                 (random-word)
-                 (str " ")))
-         (apply str)
-         (string/trim))))
+    (apply-trim
+      (for [i (range (count pattern))]
+        (->> (get pattern i)
+             (random-word)
+             (str " "))))))
 
 (defn sentence-inter []
   (if (< (rand) 0.5)
@@ -114,18 +115,18 @@
     4 (sentence-connector size)
     (random-sentence (base :size))))
 
-(defn random-sentences [count size]
-  (->> (for [i (range count)]
-         (-> (random-sentence size)
-             (string/capitalize)
-             (str". \n\n")))
-       (apply str)
-       (string/trim)))
+(defn random-sentences
+  [count size]
+  (apply-trim
+    (for [i (range count)]
+      (-> (random-sentence size)
+          (string/capitalize)
+          (str ". \n\n")))))
 
 (defn random-paragraph [size]
   (letfn [(two-of [x] (apply str (repeat 2 (random-paragraph x))))]
     (case size
-      1 (apply str
+      1 (apply-trim
           (for [i (range (+ 3 (rand-int 2)))]
             (-> (random-sentence size_any)
                 (string/capitalize)
@@ -136,11 +137,10 @@
       (random-paragraph (base :size)))))
 
 (defn random-paragraphs [count size]
-  (->> (for [i (range count)]
-         (-> (random-paragraph size)
-             (str "\n\n")))
-       (apply str)
-       (string/trim)))
+  (apply-trim
+    (for [i (range count)]
+      (-> (random-paragraph size)
+          (str "\n\n")))))
 
 (defn call-args [optStr optInt arg]
   (swap! counter dec)
@@ -178,8 +178,9 @@
     (if-let [in-str (re-find search-reg word-range)]
       (if-not (zero? (coords :ch))
         (->> (apply str (parse-command in-str))
-             (editor/replace cm pre-pos coords))
-        (editor/insert-at-cursor cm (run-command @base))))))
+             (editor/replace cm pre-pos coords)))
+      (editor/insert-at-cursor cm (run-command @base)))))
+
 
 
 (defn lorem-ipsum-catch []
@@ -190,4 +191,3 @@
 (cmd/command {:command :lorem-ipsum
               :desc "Lorem: Run text generator"
               :exec lorem-ipsum-catch})
-
